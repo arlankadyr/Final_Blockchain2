@@ -114,8 +114,6 @@ contract Deploy is Script {
         oracle.setSkinPrice(3, 200  * 1e18); // Glock $200
         oracle.setSkinPrice(4, 150  * 1e18); // USP $150
 
-        vm.stopBroadcast();
-
         // Выводим все адреса
         console.log("\n=== DEPLOYED ADDRESSES ===");
         console.log("CraftToken:    ", address(craftToken));
@@ -128,5 +126,7 @@ contract Deploy is Script {
         console.log("RentalVault:   ", address(vault));
         console.log("SkinPriceOracle:", address(oracle));
         console.log("CraftingSystem: ", address(crafting));
+
+        vm.stopBroadcast();
     }
 }
