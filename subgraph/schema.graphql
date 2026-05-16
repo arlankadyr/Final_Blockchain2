@@ -1,0 +1,50 @@
+type SkinType @entity(immutable: false) {
+  id: ID!
+  name: String!
+  rarity: Int!
+  maxSupply: BigInt!
+  totalMinted: BigInt!
+}
+
+type PlayerInventory @entity(immutable: false) {
+  id: ID!
+  player: Bytes!
+  skinId: BigInt!
+  amount: BigInt!
+  lastUpdated: BigInt!
+}
+
+type SwapEvent @entity(immutable: true) {
+  id: ID!
+  user: Bytes!
+  tokenIn: Bytes!
+  amountIn: BigInt!
+  amountOut: BigInt!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+}
+
+type LiquidityEvent @entity(immutable: true) {
+  id: ID!
+  provider: Bytes!
+  amountA: BigInt!
+  amountB: BigInt!
+  lpTokens: BigInt!
+  timestamp: BigInt!
+}
+
+type CaseOpenedEvent @entity(immutable: true) {
+  id: ID!
+  player: Bytes!
+  caseId: BigInt!
+  skinId: BigInt!
+  timestamp: BigInt!
+}
+
+type ProtocolStats @entity(immutable: false) {
+  id: ID!
+  totalSwaps: BigInt!
+  totalSkinsMinted: BigInt!
+  totalCasesOpened: BigInt!
+  totalLiquidityEvents: BigInt!
+}

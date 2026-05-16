@@ -1,0 +1,70 @@
+specVersion: 0.0.5
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: ethereum
+    name: SkinToken
+    network: arbitrum-sepolia
+    source:
+      address: "0x36Ecc0242CF19B9d2FD13a79a3615fef884645FD"
+      abi: SkinToken
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - SkinMinted
+        - SkinTypeCreated
+      abis:
+        - name: SkinToken
+          file: SkinToken/SkinToken.json
+      eventHandlers:
+        - event: SkinMinted(indexed address,indexed uint256,uint256)
+          handler: handleSkinMinted
+        - event: SkinTypeCreated(indexed uint256,string,uint8,uint256)
+          handler: handleSkinTypeCreated
+      file: SkinToken/SkinToken.wasm
+  - kind: ethereum
+    name: SkinMarketAMM
+    network: arbitrum-sepolia
+    source:
+      address: "0x60DC2A02E2e03E14b17816Fc0338779839EE1ee3"
+      abi: SkinMarketAMM
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Swap
+        - LiquidityEvent
+      abis:
+        - name: SkinMarketAMM
+          file: SkinMarketAMM/SkinMarketAMM.json
+      eventHandlers:
+        - event: Swap(indexed address,address,uint256,uint256)
+          handler: handleSwap
+        - event: LiquidityAdded(indexed address,uint256,uint256,uint256)
+          handler: handleLiquidityAdded
+      file: SkinMarketAMM/SkinMarketAMM.wasm
+  - kind: ethereum
+    name: CaseOpening
+    network: arbitrum-sepolia
+    source:
+      address: "0x5C4195840127243aa57D80CFb5eC89F54E438025"
+      abi: CaseOpening
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - CaseOpenedEvent
+      abis:
+        - name: CaseOpening
+          file: CaseOpening/CaseOpening.json
+      eventHandlers:
+        - event: CaseOpened(indexed uint256,indexed address,uint256)
+          handler: handleCaseOpened
+      file: CaseOpening/CaseOpening.wasm
