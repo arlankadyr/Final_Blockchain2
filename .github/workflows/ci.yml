@@ -20,8 +20,11 @@ jobs:
       - name: Build
         run: forge build
 
-      - name: Run tests
-        run: forge test -v
+      - name: Run tests (unit + invariant)
+        run: forge test -v --no-match-path "test/fork/*"
+
+      - name: Run fork tests
+        run: forge test -v --match-path "test/fork/*"
         env:
           ARBITRUM_RPC_URL: ${{ secrets.ARBITRUM_RPC_URL }}
 
