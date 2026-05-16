@@ -10,13 +10,7 @@ contract MockVRFCoordinator {
 
     event RandomWordsRequested(uint256 requestId, address consumer);
 
-    function requestRandomWords(
-        bytes32,
-        uint64,
-        uint16,
-        uint32,
-        uint32
-    ) external returns (uint256 requestId) {
+    function requestRandomWords(bytes32, uint64, uint16, uint32, uint32) external returns (uint256 requestId) {
         requestId = ++requestIdCounter;
         requestToConsumer[requestId] = msg.sender;
         emit RandomWordsRequested(requestId, msg.sender);
@@ -30,10 +24,7 @@ contract MockVRFCoordinator {
     }
 
     /// @notice Удобный хелпер — fulfil с одним числом
-    function fulfillRandomWordsWithOverride(
-        uint256 requestId,
-        uint256 randomWord
-    ) external {
+    function fulfillRandomWordsWithOverride(uint256 requestId, uint256 randomWord) external {
         uint256[] memory words = new uint256[](1);
         words[0] = randomWord;
         this.fulfillRandomWords(requestId, words);

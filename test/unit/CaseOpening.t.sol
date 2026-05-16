@@ -26,12 +26,7 @@ contract CaseOpeningTest is Test {
         skinToken = new SkinToken(admin);
 
         caseOpening = new CaseOpening(
-            admin,
-            address(vrfCoordinator),
-            bytes32("keyhash"),
-            1,
-            address(skinToken),
-            address(craftToken)
+            admin, address(vrfCoordinator), bytes32("keyhash"), 1, address(skinToken), address(craftToken)
         );
 
         // Даём CaseOpening право минтить скины
@@ -43,7 +38,6 @@ contract CaseOpeningTest is Test {
         vm.stopPrank();
     }
 
-    
     function test_InitialCaseCreated() public view {
         assertEq(caseOpening.nextCaseId(), 1);
         (string memory name,, bool exists) = caseOpening.cases(0);
@@ -56,7 +50,6 @@ contract CaseOpeningTest is Test {
         assertEq(price, CASE_PRICE);
     }
 
-    
     function test_OpenCase_RequestCreated() public {
         vm.startPrank(player);
         craftToken.approve(address(caseOpening), CASE_PRICE);
@@ -90,11 +83,8 @@ contract CaseOpeningTest is Test {
         vrfCoordinator.fulfillRandomWordsWithOverride(requestId, 100);
 
         // Игрок получил скин
-        uint256 total = skinToken.balanceOf(player, 0)
-            + skinToken.balanceOf(player, 1)
-            + skinToken.balanceOf(player, 2)
-            + skinToken.balanceOf(player, 3)
-            + skinToken.balanceOf(player, 4);
+        uint256 total = skinToken.balanceOf(player, 0) + skinToken.balanceOf(player, 1) + skinToken.balanceOf(player, 2)
+            + skinToken.balanceOf(player, 3) + skinToken.balanceOf(player, 4);
         assertEq(total, 1);
     }
 

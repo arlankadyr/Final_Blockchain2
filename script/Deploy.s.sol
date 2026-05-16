@@ -20,14 +20,14 @@ contract Deploy is Script {
     // Arbitrum Sepolia Chainlink VRF
     address constant VRF_COORDINATOR = 0x50d47e4142598E3411aA864e08a44284e471AC6f;
     bytes32 constant KEY_HASH = 0x027f94ff1465b3525f9fc03e9ff7d6d2c0953482246dd6ae0ef3f58e15c0d2df;
-    uint64  constant SUBSCRIPTION_ID = 1; // замени на свой sub ID
+    uint64 constant SUBSCRIPTION_ID = 1; // замени на свой sub ID
 
     // Arbitrum Sepolia WETH
     address constant WETH = 0x980B62Da83eFf3D4576C647993b0c1D7faf17c73;
 
     function run() external {
         uint256 deployerKey = vm.envUint("PRIVATE_KEY");
-        address deployer    = vm.addr(deployerKey);
+        address deployer = vm.addr(deployerKey);
 
         vm.startBroadcast(deployerKey);
 
@@ -52,34 +52,22 @@ contract Deploy is Script {
         console.log("SkinTimelock:", address(timelock));
 
         // 5. SkinGovernor
-        SkinGovernor governor = new SkinGovernor(
-            IVotes(address(craftToken)),
-            timelock
-        );
+        SkinGovernor governor = new SkinGovernor(IVotes(address(craftToken)), timelock);
         console.log("SkinGovernor:", address(governor));
 
         // 6. Setup Timelock roles
-        timelock.grantRole(timelock.PROPOSER_ROLE(),  address(governor));
+        timelock.grantRole(timelock.PROPOSER_ROLE(), address(governor));
         timelock.grantRole(timelock.CANCELLER_ROLE(), address(governor));
         craftToken.grantRole(craftToken.MINTER_ROLE(), address(timelock));
 
         // 7. CaseOpening (Chainlink VRF)
         CaseOpening caseOpening = new CaseOpening(
-            deployer,
-            VRF_COORDINATOR,
-            KEY_HASH,
-            SUBSCRIPTION_ID,
-            address(skinToken),
-            address(craftToken)
+            deployer, VRF_COORDINATOR, KEY_HASH, SUBSCRIPTION_ID, address(skinToken), address(craftToken)
         );
         console.log("CaseOpening:", address(caseOpening));
 
         // 8. SkinMarketAMM
-        SkinMarketAMM amm = new SkinMarketAMM(
-            deployer,
-            address(craftToken),
-            WETH
-        );
+        SkinMarketAMM amm = new SkinMarketAMM(deployer, address(craftToken), WETH);
         console.log("SkinMarketAMM:", address(amm));
 
         // 9. RentalVault (ERC-4626)
@@ -87,19 +75,11 @@ contract Deploy is Script {
         console.log("RentalVault:", address(vault));
 
         // 10. SkinPriceOracle (Chainlink)
-        SkinPriceOracle oracle = new SkinPriceOracle(
-            deployer,
-            ETH_USD_FEED,
-            3600
-        );
+        SkinPriceOracle oracle = new SkinPriceOracle(deployer, ETH_USD_FEED, 3600);
         console.log("SkinPriceOracle:", address(oracle));
 
         // 11. CraftingSystem
-        CraftingSystem crafting = new CraftingSystem(
-            deployer,
-            address(skinToken),
-            address(craftToken)
-        );
+        CraftingSystem crafting = new CraftingSystem(deployer, address(skinToken), address(craftToken));
         console.log("CraftingSystem:", address(crafting));
 
         // 12. Setup roles
@@ -108,11 +88,11 @@ contract Deploy is Script {
         craftToken.grantRole(craftToken.MINTER_ROLE(), address(deployer));
 
         // 13. Устанавливаем цены скинов в оракуле
-        oracle.setSkinPrice(0, 50  * 1e18);  // AK-47 $50
+        oracle.setSkinPrice(0, 50 * 1e18); // AK-47 $50
         oracle.setSkinPrice(1, 5000 * 1e18); // AWP Dragon Lore $5000
         oracle.setSkinPrice(2, 3000 * 1e18); // M4A4 Howl $3000
-        oracle.setSkinPrice(3, 200  * 1e18); // Glock $200
-        oracle.setSkinPrice(4, 150  * 1e18); // USP $150
+        oracle.setSkinPrice(3, 200 * 1e18); // Glock $200
+        oracle.setSkinPrice(4, 150 * 1e18); // USP $150
 
         // Выводим все адреса
         console.log("\n=== DEPLOYED ADDRESSES ===");

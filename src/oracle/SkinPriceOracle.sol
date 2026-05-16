@@ -19,11 +19,7 @@ contract SkinPriceOracle is AccessControl {
     event SkinPriceSet(uint256 indexed skinId, uint256 priceUSD);
     event StalenessThresholdUpdated(uint256 newThreshold);
 
-    constructor(
-        address admin,
-        address _priceFeed,
-        uint256 _stalenessThreshold
-    ) {
+    constructor(address admin, address _priceFeed, uint256 _stalenessThreshold) {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         _grantRole(ORACLE_ADMIN_ROLE, admin);
         priceFeed = AggregatorV3Interface(_priceFeed);
@@ -32,19 +28,10 @@ contract SkinPriceOracle is AccessControl {
 
     /// @notice Получить текущую цену ETH/USD из Chainlink
     function getETHPrice() external view returns (int256 price, uint256 updatedAt) {
-        (
-            uint80 roundId,
-            int256 answer,
-            ,
-            uint256 timestamp,
-            uint80 answeredInRound
-        ) = priceFeed.latestRoundData();
+        (uint80 roundId, int256 answer,, uint256 timestamp, uint80 answeredInRound) = priceFeed.latestRoundData();
 
         // Staleness check
-        require(
-            block.timestamp - timestamp <= stalenessThreshold,
-            "Stale price"
-        );
+        require(block.timestamp - timestamp <= stalenessThreshold, "Stale price");
         // Sanity checks
         require(answer > 0, "Invalid price");
         require(answeredInRound >= roundId, "Incomplete round");
@@ -64,10 +51,7 @@ contract SkinPriceOracle is AccessControl {
     }
 
     /// @notice Установить цену скина в USD
-    function setSkinPrice(
-        uint256 skinId,
-        uint256 priceUSD
-    ) external onlyRole(ORACLE_ADMIN_ROLE) {
+    function setSkinPrice(uint256 skinId, uint256 priceUSD) external onlyRole(ORACLE_ADMIN_ROLE) {
         require(priceUSD > 0, "Zero price");
         skinPriceUSD[skinId] = priceUSD;
         emit SkinPriceSet(skinId, priceUSD);

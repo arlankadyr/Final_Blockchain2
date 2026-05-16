@@ -10,13 +10,13 @@ contract SkinTokenTest is Test {
     address public user1 = makeAddr("user1");
     address public user2 = makeAddr("user2");
 
-   function setUp() public {
-    vm.startPrank(admin);
-    skinToken = new SkinToken(admin);
-    skinToken.grantRole(skinToken.MINTER_ROLE(), minter);
-    vm.stopPrank();
+    function setUp() public {
+        vm.startPrank(admin);
+        skinToken = new SkinToken(admin);
+        skinToken.grantRole(skinToken.MINTER_ROLE(), minter);
+        vm.stopPrank();
     }
-    
+
     function test_InitialSkinsCreated() public view {
         assertEq(skinToken.nextSkinId(), 5);
     }
@@ -24,7 +24,7 @@ contract SkinTokenTest is Test {
     function test_FirstSkinIsAK() public view {
         (string memory name, SkinToken.Rarity rarity,,) = skinToken.skins(0);
         assertEq(name, "AK-47 | Redline");
-        assertEq(uint(rarity), uint(SkinToken.Rarity.COMMON));
+        assertEq(uint256(rarity), uint256(SkinToken.Rarity.COMMON));
     }
 
     function test_LegendarySkinMaxSupply() public view {
@@ -68,7 +68,6 @@ contract SkinTokenTest is Test {
         skinToken.mint(user1, 1, 501); // AWP max supply = 500
     }
 
-    
     function test_CreateNewSkinType() public {
         vm.prank(admin);
         uint256 newId = skinToken.createSkinType("Desert Eagle | Blaze", SkinToken.Rarity.RARE, 2000);
@@ -82,7 +81,6 @@ contract SkinTokenTest is Test {
         skinToken.createSkinType("Fake Skin", SkinToken.Rarity.COMMON, 1000);
     }
 
-    
     function test_TransferSkin() public {
         vm.prank(minter);
         skinToken.mint(user1, 0, 2);
@@ -94,7 +92,6 @@ contract SkinTokenTest is Test {
         assertEq(skinToken.balanceOf(user2, 0), 1);
     }
 
-    
     function test_BurnSkin() public {
         vm.prank(minter);
         skinToken.mint(user1, 0, 3);
@@ -114,10 +111,9 @@ contract SkinTokenTest is Test {
         skinToken.burn(user1, 0, 1);
     }
 
-    
     function test_GetRarity() public view {
-        assertEq(uint(skinToken.getRarity(0)), uint(SkinToken.Rarity.COMMON));
-        assertEq(uint(skinToken.getRarity(1)), uint(SkinToken.Rarity.LEGENDARY));
+        assertEq(uint256(skinToken.getRarity(0)), uint256(SkinToken.Rarity.COMMON));
+        assertEq(uint256(skinToken.getRarity(1)), uint256(SkinToken.Rarity.LEGENDARY));
     }
 
     function test_TotalSupplyTracked() public {
@@ -126,7 +122,6 @@ contract SkinTokenTest is Test {
         assertEq(skinToken.totalSupply(0), 10);
     }
 
-    
     function testFuzz_MintWithinMaxSupply(uint256 amount) public {
         amount = bound(amount, 1, 500); // AWP max = 500
         vm.prank(minter);

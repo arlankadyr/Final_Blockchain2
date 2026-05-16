@@ -8,8 +8,11 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 contract SkinToken is ERC1155, ERC1155Burnable, ERC1155Supply, AccessControl {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
-    
-    enum Rarity { COMMON, RARE, LEGENDARY }
+    enum Rarity {
+        COMMON,
+        RARE,
+        LEGENDARY
+    }
 
     // Данные о каждом типе скина
     struct SkinInfo {
@@ -32,33 +35,26 @@ contract SkinToken is ERC1155, ERC1155Burnable, ERC1155Supply, AccessControl {
         _grantRole(MINTER_ROLE, admin);
 
         // Создаём стартовые типы скинов
-        _createSkinType("AK-47 | Redline",      Rarity.COMMON,    10000);
-        _createSkinType("AWP | Dragon Lore",     Rarity.LEGENDARY, 500);
-        _createSkinType("M4A4 | Howl",           Rarity.LEGENDARY, 500);
-        _createSkinType("Glock | Water Elemental",Rarity.RARE,     3000);
-        _createSkinType("USP | Neo-Noir",         Rarity.RARE,     3000);
+        _createSkinType("AK-47 | Redline", Rarity.COMMON, 10000);
+        _createSkinType("AWP | Dragon Lore", Rarity.LEGENDARY, 500);
+        _createSkinType("M4A4 | Howl", Rarity.LEGENDARY, 500);
+        _createSkinType("Glock | Water Elemental", Rarity.RARE, 3000);
+        _createSkinType("USP | Neo-Noir", Rarity.RARE, 3000);
     }
 
     /// @notice Создать новый тип скина (только admin)
-    function createSkinType(
-        string calldata name,
-        Rarity rarity,
-        uint256 maxSupply
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
+    function createSkinType(string calldata name, Rarity rarity, uint256 maxSupply)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (uint256)
+    {
         return _createSkinType(name, rarity, maxSupply);
     }
 
     /// @notice Заминтить скин игроку (только MINTER_ROLE — вызывает CaseOpening)
-    function mint(
-        address to,
-        uint256 skinId,
-        uint256 amount
-    ) external onlyRole(MINTER_ROLE) {
+    function mint(address to, uint256 skinId, uint256 amount) external onlyRole(MINTER_ROLE) {
         require(skins[skinId].exists, "Skin does not exist");
-        require(
-            totalSupply(skinId) + amount <= skins[skinId].maxSupply,
-            "Exceeds max supply"
-        );
+        require(totalSupply(skinId) + amount <= skins[skinId].maxSupply, "Exceeds max supply");
         _mint(to, skinId, amount, "");
         emit SkinMinted(to, skinId, amount);
     }
@@ -76,38 +72,22 @@ contract SkinToken is ERC1155, ERC1155Burnable, ERC1155Supply, AccessControl {
     }
 
     // ─── Internal ─────────────────────────────────────────────
-    function _createSkinType(
-        string memory name,
-        Rarity rarity,
-        uint256 maxSupply
-    ) internal returns (uint256) {
+    function _createSkinType(string memory name, Rarity rarity, uint256 maxSupply) internal returns (uint256) {
         uint256 skinId = nextSkinId++;
-        skins[skinId] = SkinInfo({
-            name: name,
-            rarity: rarity,
-            maxSupply: maxSupply,
-            exists: true
-        });
+        skins[skinId] = SkinInfo({name: name, rarity: rarity, maxSupply: maxSupply, exists: true});
         emit SkinTypeCreated(skinId, name, rarity, maxSupply);
         return skinId;
     }
 
     // ─── Required overrides ───────────────────────────────────
-    function _update(
-        address from,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory values
-    ) internal override(ERC1155, ERC1155Supply) {
+    function _update(address from, address to, uint256[] memory ids, uint256[] memory values)
+        internal
+        override(ERC1155, ERC1155Supply)
+    {
         super._update(from, to, ids, values);
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC1155, AccessControl)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view override(ERC1155, AccessControl) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 }

@@ -5,9 +5,11 @@ import "@openzeppelin/contracts/governance/TimelockController.sol";
 
 contract SkinTimelock is TimelockController {
     constructor(
-        uint256 minDelay,        // 2 дня
+        uint256 minDelay, // 2 дня
         address[] memory proposers,
         address[] memory executors,
         address admin
-    ) TimelockController(minDelay, proposers, executors, admin) {}
+    )
+        TimelockController(minDelay, proposers, executors, admin)
+    {}
 }

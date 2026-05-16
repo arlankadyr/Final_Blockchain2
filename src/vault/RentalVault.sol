@@ -37,11 +37,9 @@ contract RentalVault is ERC4626, AccessControl, ReentrancyGuard {
     event RentalEnded(uint256 indexed rentalId, address indexed renter);
     event RentalIncomeAdded(uint256 amount);
 
-    constructor(
-        address admin,
-        address _craftToken
-    ) ERC4626(IERC20(_craftToken))
-      ERC20("Rental Vault Share", "rvCRAFT")
+    constructor(address admin, address _craftToken)
+        ERC4626(IERC20(_craftToken))
+        ERC20("Rental Vault Share", "rvCRAFT")
     {
         craftToken = CraftToken(_craftToken);
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
@@ -49,11 +47,11 @@ contract RentalVault is ERC4626, AccessControl, ReentrancyGuard {
     }
 
     /// @notice Арендовать скин — платишь CRAFT, аренда на N дней
-    function rentSkin(
-        uint256 skinId,
-        uint256 days_,
-        uint256 pricePerDay
-    ) external nonReentrant returns (uint256 rentalId) {
+    function rentSkin(uint256 skinId, uint256 days_, uint256 pricePerDay)
+        external
+        nonReentrant
+        returns (uint256 rentalId)
+    {
         require(days_ > 0, "Zero days");
         require(pricePerDay > 0, "Zero price");
 
@@ -82,10 +80,7 @@ contract RentalVault is ERC4626, AccessControl, ReentrancyGuard {
     function endRental(uint256 rentalId) external nonReentrant {
         Rental storage rental = rentals[rentalId];
         require(rental.active, "Rental not active");
-        require(
-            msg.sender == rental.renter || hasRole(VAULT_ADMIN_ROLE, msg.sender),
-            "Not authorized"
-        );
+        require(msg.sender == rental.renter || hasRole(VAULT_ADMIN_ROLE, msg.sender), "Not authorized");
 
         rental.active = false;
         emit RentalEnded(rentalId, rental.renter);
@@ -115,10 +110,7 @@ contract RentalVault is ERC4626, AccessControl, ReentrancyGuard {
     }
 
     // ─── Required overrides ───────────────────────────────────
-    function supportsInterface(bytes4 interfaceId)
-        public view override(AccessControl)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view override(AccessControl) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 }

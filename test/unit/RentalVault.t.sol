@@ -8,10 +8,10 @@ contract RentalVaultTest is Test {
     RentalVault public vault;
     CraftToken public craftToken;
 
-    address public admin   = makeAddr("admin");
-    address public user1   = makeAddr("user1");
-    address public user2   = makeAddr("user2");
-    address public renter  = makeAddr("renter");
+    address public admin = makeAddr("admin");
+    address public user1 = makeAddr("user1");
+    address public user2 = makeAddr("user2");
+    address public renter = makeAddr("renter");
 
     uint256 constant DEPOSIT_AMOUNT = 10_000 * 1e18;
 

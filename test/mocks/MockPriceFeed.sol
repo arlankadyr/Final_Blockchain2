@@ -5,7 +5,7 @@ import "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.so
 contract MockPriceFeed is AggregatorV3Interface {
     int256 private price;
     uint256 private updatedAt;
-    uint80  private roundId;
+    uint80 private roundId;
 
     uint8 public constant override decimals = 8;
     string public constant override description = "ETH/USD Mock";
@@ -27,15 +27,11 @@ contract MockPriceFeed is AggregatorV3Interface {
         updatedAt = _updatedAt;
     }
 
-    function latestRoundData() external view override returns (
-        uint80, int256, uint256, uint256, uint80
-    ) {
+    function latestRoundData() external view override returns (uint80, int256, uint256, uint256, uint80) {
         return (roundId, price, block.timestamp, updatedAt, roundId);
     }
 
-    function getRoundData(uint80) external view override returns (
-        uint80, int256, uint256, uint256, uint80
-    ) {
+    function getRoundData(uint80) external view override returns (uint80, int256, uint256, uint256, uint80) {
         return (roundId, price, block.timestamp, updatedAt, roundId);
     }
 }

@@ -11,10 +11,10 @@ contract SkinGovernorTest is Test {
     SkinTimelock public timelock;
     CraftToken public craftToken;
 
-    address public admin   = makeAddr("admin");
-    address public voter1  = makeAddr("voter1");
-    address public voter2  = makeAddr("voter2");
-    address public voter3  = makeAddr("voter3");
+    address public admin = makeAddr("admin");
+    address public voter1 = makeAddr("voter1");
+    address public voter2 = makeAddr("voter2");
+    address public voter3 = makeAddr("voter3");
 
     uint256 constant VOTER_BALANCE = 1_000_000 * 1e18;
 
@@ -23,8 +23,8 @@ contract SkinGovernorTest is Test {
         craftToken = new CraftToken(admin);
 
         // Деплоим Timelock
-        address[] memory proposers  = new address[](1);
-        address[] memory executors  = new address[](1);
+        address[] memory proposers = new address[](1);
+        address[] memory executors = new address[](1);
         proposers[0] = address(0); // любой может propose через governor
         executors[0] = address(0); // любой может execute
         timelock = new SkinTimelock(2 days, proposers, executors, admin);
@@ -45,7 +45,7 @@ contract SkinGovernorTest is Test {
         vm.stopPrank();
 
         // Делегируем голоса себе
-        
+
         vm.prank(voter1);
         craftToken.delegate(voter1);
         vm.prank(voter2);
@@ -60,22 +60,15 @@ contract SkinGovernorTest is Test {
     // ─── Helpers ──────────────────────────────────────────────
     function _createProposal() internal returns (uint256 proposalId) {
         address[] memory targets = new address[](1);
-        uint256[] memory values  = new uint256[](1);
-        bytes[]   memory calldatas = new bytes[](1);
+        uint256[] memory values = new uint256[](1);
+        bytes[] memory calldatas = new bytes[](1);
 
-        targets[0]    = address(craftToken);
-        values[0]     = 0;
-        calldatas[0]  = abi.encodeWithSignature(
-            "mint(address,uint256)",
-            admin,
-            1000 * 1e18
-        );
+        targets[0] = address(craftToken);
+        values[0] = 0;
+        calldatas[0] = abi.encodeWithSignature("mint(address,uint256)", admin, 1000 * 1e18);
 
         vm.prank(voter1);
-        proposalId = governor.propose(
-            targets, values, calldatas,
-            "Proposal: mint 1000 CRAFT to treasury"
-        );
+        proposalId = governor.propose(targets, values, calldatas, "Proposal: mint 1000 CRAFT to treasury");
     }
 
     function _passVotingDelay() internal {
@@ -111,7 +104,7 @@ contract SkinGovernorTest is Test {
     function test_CreateProposal() public {
         uint256 proposalId = _createProposal();
         assertTrue(proposalId != 0);
-        assertEq(uint(governor.state(proposalId)), uint(IGovernor.ProposalState.Pending));
+        assertEq(uint256(governor.state(proposalId)), uint256(IGovernor.ProposalState.Pending));
     }
 
     function test_RevertPropose_BelowThreshold() public {
@@ -122,9 +115,9 @@ contract SkinGovernorTest is Test {
         craftToken.delegate(poorVoter);
         vm.roll(block.number + 1);
 
-        address[] memory targets   = new address[](1);
-        uint256[] memory values    = new uint256[](1);
-        bytes[]   memory calldatas = new bytes[](1);
+        address[] memory targets = new address[](1);
+        uint256[] memory values = new uint256[](1);
+        bytes[] memory calldatas = new bytes[](1);
         targets[0] = address(craftToken);
 
         vm.prank(poorVoter);
@@ -137,13 +130,12 @@ contract SkinGovernorTest is Test {
         uint256 proposalId = _createProposal();
         _passVotingDelay();
 
-        assertEq(uint(governor.state(proposalId)), uint(IGovernor.ProposalState.Active));
+        assertEq(uint256(governor.state(proposalId)), uint256(IGovernor.ProposalState.Active));
 
         vm.prank(voter1);
         governor.castVote(proposalId, 1); // 1 = For
 
-        (uint256 against, uint256 forVotes, uint256 abstain) =
-            governor.proposalVotes(proposalId);
+        (uint256 against, uint256 forVotes, uint256 abstain) = governor.proposalVotes(proposalId);
         assertTrue(forVotes > 0);
         assertEq(against, 0);
         assertEq(abstain, 0);
@@ -183,7 +175,7 @@ contract SkinGovernorTest is Test {
     function test_FullGovernanceLifecycle() public {
         // 1. Propose
         uint256 proposalId = _createProposal();
-        assertEq(uint(governor.state(proposalId)), uint(IGovernor.ProposalState.Pending));
+        assertEq(uint256(governor.state(proposalId)), uint256(IGovernor.ProposalState.Pending));
 
         // 2. Vote
         _passVotingDelay();
@@ -196,29 +188,26 @@ contract SkinGovernorTest is Test {
 
         // 3. Succeeded
         _passVotingPeriod();
-        assertEq(uint(governor.state(proposalId)), uint(IGovernor.ProposalState.Succeeded));
+        assertEq(uint256(governor.state(proposalId)), uint256(IGovernor.ProposalState.Succeeded));
 
         // 4. Queue
-        address[] memory targets   = new address[](1);
-        uint256[] memory values    = new uint256[](1);
-        bytes[]   memory calldatas = new bytes[](1);
-        targets[0]   = address(craftToken);
+        address[] memory targets = new address[](1);
+        uint256[] memory values = new uint256[](1);
+        bytes[] memory calldatas = new bytes[](1);
+        targets[0] = address(craftToken);
         calldatas[0] = abi.encodeWithSignature("mint(address,uint256)", admin, 1000 * 1e18);
 
-        governor.queue(targets, values, calldatas,
-            keccak256(bytes("Proposal: mint 1000 CRAFT to treasury")));
-        assertEq(uint(governor.state(proposalId)), uint(IGovernor.ProposalState.Queued));
+        governor.queue(targets, values, calldatas, keccak256(bytes("Proposal: mint 1000 CRAFT to treasury")));
+        assertEq(uint256(governor.state(proposalId)), uint256(IGovernor.ProposalState.Queued));
 
         // 5. Timelock delay (2 дня)
         vm.warp(block.timestamp + 2 days + 1);
 
-        
         // 7. Execute
         uint256 balanceBefore = craftToken.balanceOf(admin);
-        governor.execute(targets, values, calldatas,
-            keccak256(bytes("Proposal: mint 1000 CRAFT to treasury")));
+        governor.execute(targets, values, calldatas, keccak256(bytes("Proposal: mint 1000 CRAFT to treasury")));
 
-        assertEq(uint(governor.state(proposalId)), uint(IGovernor.ProposalState.Executed));
+        assertEq(uint256(governor.state(proposalId)), uint256(IGovernor.ProposalState.Executed));
         assertEq(craftToken.balanceOf(admin), balanceBefore + 1000 * 1e18);
     }
 

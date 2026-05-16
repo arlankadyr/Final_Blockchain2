@@ -10,10 +10,10 @@ contract SkinPriceOracleTest is Test {
     MockPriceFeed public priceFeed;
 
     address public admin = makeAddr("admin");
-    address public user  = makeAddr("user");
+    address public user = makeAddr("user");
 
     int256 constant ETH_PRICE = 3000 * 1e8; // $3000 в 8 decimals
-    uint256 constant STALENESS = 3600;       // 1 час
+    uint256 constant STALENESS = 3600; // 1 час
 
     function setUp() public {
         vm.startPrank(admin);

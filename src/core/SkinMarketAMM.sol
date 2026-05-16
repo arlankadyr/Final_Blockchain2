@@ -20,7 +20,7 @@ contract SkinMarketAMM is ERC20, ReentrancyGuard, AccessControl {
     uint256 public reserveB;
 
     // ─── Константы ────────────────────────────────────────────
-    uint256 public constant FEE_NUMERATOR   = 997; // 0.3% fee
+    uint256 public constant FEE_NUMERATOR = 997; // 0.3% fee
     uint256 public constant FEE_DENOMINATOR = 1000;
     uint256 public constant MINIMUM_LIQUIDITY = 1000;
 
@@ -29,11 +29,7 @@ contract SkinMarketAMM is ERC20, ReentrancyGuard, AccessControl {
     event LiquidityRemoved(address indexed provider, uint256 amountA, uint256 amountB, uint256 lpTokens);
     event Swap(address indexed user, address tokenIn, uint256 amountIn, uint256 amountOut);
 
-    constructor(
-        address admin,
-        address _tokenA,
-        address _tokenB
-    ) ERC20("SkinMarket LP", "SMLP") {
+    constructor(address admin, address _tokenA, address _tokenB) ERC20("SkinMarket LP", "SMLP") {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         _grantRole(AMM_ADMIN_ROLE, admin);
         tokenA = IERC20(_tokenA);
@@ -41,11 +37,11 @@ contract SkinMarketAMM is ERC20, ReentrancyGuard, AccessControl {
     }
 
     // ─── Add Liquidity ────────────────────────────────────────
-    function addLiquidity(
-        uint256 amountA,
-        uint256 amountB,
-        uint256 minLpTokens
-    ) external nonReentrant returns (uint256 lpTokens) {
+    function addLiquidity(uint256 amountA, uint256 amountB, uint256 minLpTokens)
+        external
+        nonReentrant
+        returns (uint256 lpTokens)
+    {
         require(amountA > 0 && amountB > 0, "Zero amounts");
 
         tokenA.safeTransferFrom(msg.sender, address(this), amountA);
@@ -75,11 +71,11 @@ contract SkinMarketAMM is ERC20, ReentrancyGuard, AccessControl {
     }
 
     // ─── Remove Liquidity ─────────────────────────────────────
-    function removeLiquidity(
-        uint256 lpTokens,
-        uint256 minAmountA,
-        uint256 minAmountB
-    ) external nonReentrant returns (uint256 amountA, uint256 amountB) {
+    function removeLiquidity(uint256 lpTokens, uint256 minAmountA, uint256 minAmountB)
+        external
+        nonReentrant
+        returns (uint256 amountA, uint256 amountB)
+    {
         require(lpTokens > 0, "Zero LP tokens");
 
         uint256 totalSupply = totalSupply();
@@ -100,10 +96,7 @@ contract SkinMarketAMM is ERC20, ReentrancyGuard, AccessControl {
     }
 
     // ─── Swap A → B ───────────────────────────────────────────
-    function swapAforB(
-        uint256 amountIn,
-        uint256 minAmountOut
-    ) external nonReentrant returns (uint256 amountOut) {
+    function swapAforB(uint256 amountIn, uint256 minAmountOut) external nonReentrant returns (uint256 amountOut) {
         require(amountIn > 0, "Zero input");
         require(reserveA > 0 && reserveB > 0, "No liquidity");
 
@@ -118,10 +111,7 @@ contract SkinMarketAMM is ERC20, ReentrancyGuard, AccessControl {
     }
 
     // ─── Swap B → A ───────────────────────────────────────────
-    function swapBforA(
-        uint256 amountIn,
-        uint256 minAmountOut
-    ) external nonReentrant returns (uint256 amountOut) {
+    function swapBforA(uint256 amountIn, uint256 minAmountOut) external nonReentrant returns (uint256 amountOut) {
         require(amountIn > 0, "Zero input");
         require(reserveA > 0 && reserveB > 0, "No liquidity");
 
@@ -145,11 +135,7 @@ contract SkinMarketAMM is ERC20, ReentrancyGuard, AccessControl {
     }
 
     // ─── Internal ─────────────────────────────────────────────
-    function _getAmountOut(
-        uint256 amountIn,
-        uint256 reserveIn,
-        uint256 reserveOut
-    ) internal pure returns (uint256) {
+    function _getAmountOut(uint256 amountIn, uint256 reserveIn, uint256 reserveOut) internal pure returns (uint256) {
         require(reserveIn > 0 && reserveOut > 0, "No liquidity");
         uint256 amountInWithFee = amountIn * FEE_NUMERATOR;
         uint256 numerator = amountInWithFee * reserveOut;
@@ -175,10 +161,7 @@ contract SkinMarketAMM is ERC20, ReentrancyGuard, AccessControl {
         }
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public view override(AccessControl)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view override(AccessControl) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 }

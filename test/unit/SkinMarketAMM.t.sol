@@ -7,6 +7,7 @@ import "../../src/tokens/CraftToken.sol";
 // Простой ERC20 для tokenB (WETH мок)
 contract MockWETH is ERC20 {
     constructor() ERC20("Wrapped ETH", "WETH") {}
+
     function mint(address to, uint256 amount) external {
         _mint(to, amount);
     }
@@ -17,8 +18,8 @@ contract SkinMarketAMMTest is Test {
     CraftToken public craftToken;
     MockWETH public weth;
 
-    address public admin  = makeAddr("admin");
-    address public lp     = makeAddr("lp");
+    address public admin = makeAddr("admin");
+    address public lp = makeAddr("lp");
     address public trader = makeAddr("trader");
 
     uint256 constant INITIAL_A = 100_000 * 1e18;

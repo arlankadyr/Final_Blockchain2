@@ -12,26 +12,25 @@ contract SimpleToken is ERC20 {
     constructor() ERC20("Simple", "SMP") {
         _mint(msg.sender, 1_000_000 * 1e18);
     }
-    function mint(address to, uint256 amt) external { _mint(to, amt); }
+
+    function mint(address to, uint256 amt) external {
+        _mint(to, amt);
+    }
 }
 
 // Хендлер — все действия идут через него
 contract AMMHandler is Test {
     SkinMarketAMM public amm;
-    CraftToken    public craftToken;
-    SimpleToken   public simpleToken;
+    CraftToken public craftToken;
+    SimpleToken public simpleToken;
 
-    address public lp     = makeAddr("lp");
+    address public lp = makeAddr("lp");
     address public trader = makeAddr("trader");
 
     uint256 public totalSwapsAtoB;
     uint256 public totalSwapsBtoA;
 
-    constructor(
-        SkinMarketAMM _amm,
-        CraftToken _craft,
-        SimpleToken _simple
-    ) {
+    constructor(SkinMarketAMM _amm, CraftToken _craft, SimpleToken _simple) {
         amm = _amm;
         craftToken = _craft;
         simpleToken = _simple;
@@ -80,19 +79,19 @@ contract AMMHandler is Test {
 
 contract InvariantTest is Test {
     SkinMarketAMM public amm;
-    CraftToken    public craftToken;
-    SimpleToken   public simpleToken;
-    AMMHandler    public handler;
-    RentalVault   public vault;
+    CraftToken public craftToken;
+    SimpleToken public simpleToken;
+    AMMHandler public handler;
+    RentalVault public vault;
 
-    address public admin  = makeAddr("admin");
-    address public lp     = makeAddr("lp");
+    address public admin = makeAddr("admin");
+    address public lp = makeAddr("lp");
     address public trader = makeAddr("trader");
 
     function setUp() public {
         vm.startPrank(admin);
 
-        craftToken  = new CraftToken(admin);
+        craftToken = new CraftToken(admin);
         simpleToken = new SimpleToken();
         amm = new SkinMarketAMM(admin, address(craftToken), address(simpleToken));
         vault = new RentalVault(admin, address(craftToken));

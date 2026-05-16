@@ -7,18 +7,18 @@ import "../../src/tokens/CraftToken.sol";
 
 contract CraftingSystemTest is Test {
     CraftingSystem public crafting;
-    SkinToken      public skinToken;
-    CraftToken     public craftToken;
+    SkinToken public skinToken;
+    CraftToken public craftToken;
 
-    address public admin  = makeAddr("admin");
+    address public admin = makeAddr("admin");
     address public player = makeAddr("player");
-    address public user2  = makeAddr("user2");
+    address public user2 = makeAddr("user2");
 
     function setUp() public {
         vm.startPrank(admin);
-        craftToken  = new CraftToken(admin);
-        skinToken   = new SkinToken(admin);
-        crafting    = new CraftingSystem(admin, address(skinToken), address(craftToken));
+        craftToken = new CraftToken(admin);
+        skinToken = new SkinToken(admin);
+        crafting = new CraftingSystem(admin, address(skinToken), address(craftToken));
 
         // Даём CraftingSystem право минтить и сжигать скины
         skinToken.grantRole(skinToken.MINTER_ROLE(), address(crafting));
@@ -26,9 +26,8 @@ contract CraftingSystemTest is Test {
         // Выдаём игроку CRAFT токены
         craftToken.mint(player, 10_000 * 1e18);
 
-
         skinToken.mint(player, 0, 6); // 6 штук AK-47
-    
+
         skinToken.mint(player, 3, 4); // 4 штуки Glock
 
         // Даём approve для burnFrom
@@ -64,7 +63,7 @@ contract CraftingSystemTest is Test {
     // ─── Craft ────────────────────────────────────────────────
     function test_CraftRecipe0() public {
         uint256 craftBefore = craftToken.balanceOf(player);
-        uint256 akBefore    = skinToken.balanceOf(player, 0);
+        uint256 akBefore = skinToken.balanceOf(player, 0);
 
         vm.prank(player);
         crafting.craft(0);
@@ -78,8 +77,8 @@ contract CraftingSystemTest is Test {
     }
 
     function test_CraftRecipe1() public {
-        uint256 craftBefore  = craftToken.balanceOf(player);
-        uint256 glockBefore  = skinToken.balanceOf(player, 3);
+        uint256 craftBefore = craftToken.balanceOf(player);
+        uint256 glockBefore = skinToken.balanceOf(player, 3);
 
         vm.prank(player);
         crafting.craft(1);
@@ -148,9 +147,9 @@ contract CraftingSystemTest is Test {
 
     // ─── Create Recipe ────────────────────────────────────────
     function test_CreateNewRecipe() public {
-        uint256[] memory ids  = new uint256[](1);
+        uint256[] memory ids = new uint256[](1);
         uint256[] memory amts = new uint256[](1);
-        ids[0]  = 0;
+        ids[0] = 0;
         amts[0] = 5;
 
         vm.prank(admin);
@@ -160,7 +159,7 @@ contract CraftingSystemTest is Test {
     }
 
     function test_RevertCreateRecipe_NotAdmin() public {
-        uint256[] memory ids  = new uint256[](1);
+        uint256[] memory ids = new uint256[](1);
         uint256[] memory amts = new uint256[](1);
 
         vm.prank(player);
