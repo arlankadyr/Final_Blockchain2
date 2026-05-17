@@ -54,6 +54,8 @@ forge test
 ```bash
 source .env
 forge script script/Deploy.s.sol \
+https://youtu.be/vbKK6ByZH4k
+
   --rpc-url $ARBITRUM_SEPOLIA_RPC_URL \
   --private-key $PRIVATE_KEY \
   --broadcast \
